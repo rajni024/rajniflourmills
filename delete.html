@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ਡਾਟਾ ਮੈਨੇਜਮੈਂਟ - ਨੰਬਰਦਾਰ ਫਲੋਰ ਮਿਲ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+  <!-- Top Navbar -->
+  <div class="bg-white shadow-md p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-gray-800">ਡਾਟਾ ਮੈਨੇਜਮੈਂਟ</h1>
+    <div class="space-x-3">
+      <button onclick="window.location.href='in.html'"
+        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+        🏠 Home
+      </button>
+      <button onclick="window.location.href='index.html'"
+        class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+        🚪 Logout
+      </button>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto p-6 space-y-6">
+    <!-- Bulk Actions -->
+    <div class="bg-white shadow-xl rounded-2xl p-4">
+      <h2 class="text-lg font-bold mb-3">Bulk Actions</h2>
+      <div class="flex flex-wrap gap-3">
+        <button onclick="downloadBackup()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+          📥 Download Backup (JSON)
+        </button>
+
+        <label class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 cursor-pointer">
+          📤 Upload Backup
+          <input type="file" id="uploadFile" class="hidden" accept=".json" onchange="uploadBackup(event)">
+        </label>
+
+        <button onclick="bulkDelete()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+          🗑 Bulk Delete (with Backup)
+        </button>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="bg-white shadow-xl rounded-2xl p-4">
+      <h3 class="text-lg font-bold mb-3">Grinding Records</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="border px-3 py-2">ਕਤਾਰ ਨੰਬਰ</th>
+              <th class="border px-3 py-2">ਗਾਹਕ</th>
+              <th class="border px-3 py-2">ਪਿੰਡ</th>
+              <th class="border px-3 py-2">ਸਮੱਗਰੀ</th>
+              <th class="border px-3 py-2">ਵਜ਼ਨ</th>
+              <th class="border px-3 py-2">ਤਰੀਕ</th>
+              <th class="border px-3 py-2">ਕਾਰਵਾਈ</th>
+            </tr>
+          </thead>
+          <tbody id="grindingTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Backup Restore Section -->
+    <div class="bg-white shadow-xl rounded-2xl p-4">
+      <h3 class="text-lg font-bold mb-3">Backup Records</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="border px-3 py-2">ਕਤਾਰ ਨੰਬਰ</th>
+              <th class="border px-3 py-2">ਗਾਹਕ</th>
+              <th class="border px-3 py-2">ਸਮੱਗਰੀ</th>
+              <th class="border px-3 py-2">ਵਜ਼ਨ</th>
+              <th class="border px-3 py-2">ਤਰੀਕ</th>
+              <th class="border px-3 py-2">ਕਾਰਵਾਈ</th>
+            </tr>
+          </thead>
+          <tbody id="backupTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAzdeL-B6WvSaus5uj_q2_JOcwavTjrbBI",
+      authDomain: "milllmr.firebaseapp.com",
+      projectId: "milllmr",
+      storageBucket: "milllmr.firebasestorage.app",
+      messagingSenderId: "416846041177",
+      appId: "1:416846041177:web:bcbddcd5d70b716df66148",
+      measurementId: "G-1MJ8BYX6MG"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadData() {
+      // Grinding Records
+      const grindSnap = await getDocs(collection(db, "GrindingRecords"));
+      const grindTable = document.getElementById("grindingTable");
+      grindTable.innerHTML = "";
+      grindSnap.forEach(d => {
+        const r = d.data();
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="border px-3 py-2">${r.queueNumber}</td>
+          <td class="border px-3 py-2">${r.customerName}</td>
+          <td class="border px-3 py-2">${r.village}</td>
+          <td class="border px-3 py-2">${r.material}</td>
+          <td class="border px-3 py-2">${r.weight}</td>
+          <td class="border px-3 py-2">${r.dateTime}</td>
+          <td class="border px-3 py-2 text-center">
+            <button class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+              onclick='deleteRecord("${d.id}", ${JSON.stringify(r)})'>Delete</button>
+          </td>
+        `;
+        grindTable.appendChild(tr);
+      });
+
+      // Backup Records
+      const backupSnap = await getDocs(collection(db, "BackupRecords"));
+      const backupTable = document.getElementById("backupTable");
+      backupTable.innerHTML = "";
+      backupSnap.forEach(d => {
+        const r = d.data();
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="border px-3 py-2">${r.queueNumber}</td>
+          <td class="border px-3 py-2">${r.customerName}</td>
+          <td class="border px-3 py-2">${r.material}</td>
+          <td class="border px-3 py-2">${r.weight}</td>
+          <td class="border px-3 py-2">${r.dateTime}</td>
+          <td class="border px-3 py-2 text-center">
+            <button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+              onclick='restoreRecord("${d.id}", ${JSON.stringify(r)})'>Restore</button>
+          </td>
+        `;
+        backupTable.appendChild(tr);
+      });
+    }
+
+    // Delete single record
+    window.deleteRecord = async function(id, record) {
+      if (!confirm("ਕੀ ਤੁਸੀਂ ਇਹ ਰਿਕਾਰਡ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?")) return;
+      try {
+        await setDoc(doc(db, "BackupRecords", id), record); // Backup first
+        await deleteDoc(doc(db, "GrindingRecords", id));
+        alert("ਰਿਕਾਰਡ ਬੈਕਅਪ ਕਰਕੇ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।");
+        loadData();
+      } catch (err) {
+        console.error(err);
+        alert("ਡਿਲੀਟ ਕਰਨ ਵਿੱਚ ਗਲਤੀ ਆਈ ਹੈ।");
+      }
+    };
+
+    // Restore single record
+    window.restoreRecord = async function(id, record) {
+      try {
+        await setDoc(doc(db, "GrindingRecords", id), record);
+        await deleteDoc(doc(db, "BackupRecords", id));
+        alert("ਰਿਕਾਰਡ ਵਾਪਸ ਲਿਆ ਗਿਆ ਹੈ।");
+        loadData();
+      } catch (err) {
+        console.error(err);
+        alert("ਰੀਸਟੋਰ ਕਰਨ ਵਿੱਚ ਗਲਤੀ ਆਈ ਹੈ।");
+      }
+    };
+
+    // Bulk Backup (Download JSON)
+    window.downloadBackup = async function() {
+      const snap = await getDocs(collection(db, "GrindingRecords"));
+      let allData = {};
+      snap.forEach(docu => { allData[docu.id] = docu.data(); });
+
+      const blob = new Blob([JSON.stringify(allData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "backup.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    // Upload Backup
+    window.uploadBackup = async function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      const data = JSON.parse(text);
+      try {
+        for (let id in data) {
+          await setDoc(doc(db, "GrindingRecords", id), data[id]);
+        }
+        alert("Backup ਸਫਲਤਾਪੂਰਵਕ ਅੱਪਲੋਡ ਹੋ ਗਿਆ ਹੈ।");
+        loadData();
+      } catch (err) {
+        console.error(err);
+        alert("Backup ਅੱਪਲੋਡ ਕਰਨ ਵਿੱਚ ਗਲਤੀ ਆਈ ਹੈ।");
+      }
+    };
+
+    // Bulk Delete with Backup
+    window.bulkDelete = async function() {
+      if (!confirm("ਕੀ ਤੁਸੀਂ ਸਾਰੇ ਰਿਕਾਰਡ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?")) return;
+      try {
+        const snap = await getDocs(collection(db, "GrindingRecords"));
+        for (let d of snap.docs) {
+          await setDoc(doc(db, "BackupRecords", d.id), d.data()); // Backup
+          await deleteDoc(doc(db, "GrindingRecords", d.id));      // Delete
+        }
+        alert("ਸਾਰੇ ਰਿਕਾਰਡ ਬੈਕਅਪ ਕਰਕੇ ਮਿਟਾ ਦਿੱਤੇ ਗਏ ਹਨ।");
+        loadData();
+      } catch (err) {
+        console.error(err);
+        alert("Bulk delete ਵਿੱਚ ਗਲਤੀ ਆਈ ਹੈ।");
+      }
+    };
+
+    loadData();
+  </script>
+</body>
+</html>

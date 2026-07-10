@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ਨੰਬਰਦਾਰ ਫਲੋਰ ਮਿਲ - ਰਿਕਾਰਡ ਐਂਟਰੀ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen relative">
+  
+  <!-- Logout Button -->
+  <div class="absolute top-4 right-6">
+    <button onclick="logout()"
+      class="bg-red-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-red-700 transition">
+      Logout
+    </button>
+  </div>
+
+  <div class="w-full max-w-lg bg-white shadow-xl rounded-2xl p-8">
+    <!-- Title -->
+    <h1 class="text-3xl font-bold text-center text-gray-900 mb-6">
+      ਨੰਬਰਦਾਰ ਫਲੋਰ ਮਿਲ
+    </h1>
+
+    <!-- Search Section -->
+    <div class="mb-6 p-4 bg-gray-50 border rounded-xl">
+      <h2 class="text-lg font-semibold mb-3 text-gray-800">ਰਿਕਾਰਡ ਖੋਜੋ (Edit ਕਰਨ ਲਈ)</h2>
+      <div class="flex gap-2">
+        <input type="number" id="searchQueueNumber" placeholder="ਕਤਾਰ ਨੰਬਰ"
+          class="w-1/2 px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        <input type="date" id="searchDate"
+          class="w-1/2 px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+      </div>
+      <button onclick="searchRecord()" 
+        class="w-full mt-3 bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition">
+        ਖੋਜੋ
+      </button>
+    </div>
+
+    <!-- Entry Form -->
+    <form id="entryForm" class="space-y-5">
+      
+      <!-- Date & Time -->
+      <div>
+        <label for="entryDateTime" class="block text-sm font-medium text-gray-700">
+          ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ
+        </label>
+        <input type="datetime-local" id="entryDateTime" required
+          class="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none">
+      </div>
+
+      <!-- Queue Number -->
+      <div>
+        <label for="queueNumber" class="block text-sm font-medium text-gray-700">ਕਤਾਰ ਨੰਬਰ</label>
+        <input type="number" id="queueNumber" required
+          class="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none">
+      </div>
+
+      <!-- Customer Name -->
+      <div>
+        <label for="customerName" class="block text-sm font-medium text-gray-700">ਗਾਹਕ ਦਾ ਨਾਂ</label>
+        <input type="text" id="customerName" required
+          class="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none">
+      </div>
+
+      <!-- Village -->
+      <div>
+        <label for="village" class="block text-sm font-medium text-gray-700">ਪਿੰਡ</label>
+        <input type="text" id="village" required
+          class="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none">
+      </div>
+
+      <!-- Material Dropdown -->
+      <div>
+        <label for="material" class="block text-sm font-medium text-gray-700">ਪਿਸਾਈ ਲਈ ਸਮੱਗਰੀ</label>
+        <select id="material" required
+          class="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none">
+          <option value="">ਚੁਣੋ</option>
+          <option value="ਕਣਕ">ਕਣਕ</option>
+          <option value="ਮੱਕੀ">ਮੱਕੀ</option>
+          <option value="ਸਰੋਂ">ਸਰੋਂ</option>
+          <option value="ਹਲਦੀ">ਹਲਦੀ</option>
+          <option value="ਮਿਰਚ">ਮਿਰਚ</option>
+          <option value="ਮਸਾਲਾ">ਮਸਾਲਾ</option>
+          <option value="ਧਾਨ">ਧਾਨ</option>
+        </select>
+      </div>
+
+      <!-- Weight -->
+      <div>
+        <label for="weight" class="block text-sm font-medium text-gray-700">ਵਜ਼ਨ (ਕਿਲੋ + ਗ੍ਰਾਮ)</label>
+        <input type="number" step="0.001" id="weight" required
+          class="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none"
+          placeholder="ਉਦਾਹਰਨ: 21.300">
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex gap-2">
+        <button type="submit"
+          class="w-1/2 bg-green-600 text-white py-2 rounded-xl font-semibold hover:bg-green-700 transition">
+          ਸੇਵ ਕਰੋ
+        </button>
+        <button type="button" onclick="updateRecord()"
+          class="w-1/2 bg-yellow-600 text-white py-2 rounded-xl font-semibold hover:bg-yellow-700 transition">
+          ਅਪਡੇਟ ਕਰੋ
+        </button>
+      </div>
+    </form>
+
+    <!-- Extra Buttons -->
+    <div class="flex justify-between mt-4">
+      <a href="out.html"
+        class="w-1/2 mr-2 text-center bg-blue-600 text-white py-2 px-4 rounded-xl font-semibold hover:bg-blue-700 transition">
+        ਸਮਾਨ ਤਿਆਰ ਕਰਨਾ ਹੈ
+      </a>
+      <a href="check.html"
+        class="w-1/2 ml-2 text-center bg-orange-600 text-white py-2 px-4 rounded-xl font-semibold hover:bg-orange-700 transition">
+        ਕੰਮ ਚੈੱਕ ਕਰੋ
+      </a>
+    </div>
+
+    <!-- Status Message -->
+    <p id="status" class="mt-4 text-center text-sm font-medium"></p>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAzdeL-B6WvSaus5uj_q2_JOcwavTjrbBI",
+      authDomain: "milllmr.firebaseapp.com",
+      projectId: "milllmr",
+      storageBucket: "milllmr.firebasestorage.app",
+      messagingSenderId: "416846041177",
+      appId: "1:416846041177:web:bcbddcd5d70b716df66148",
+      measurementId: "G-1MJ8BYX6MG"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const form = document.getElementById("entryForm");
+    const status = document.getElementById("status");
+
+    // Autofill Date-Time
+    window.addEventListener("DOMContentLoaded", () => {
+      const now = new Date();
+      document.getElementById("entryDateTime").value = now.toISOString().slice(0,16);
+    });
+
+    // Save New Record
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const entryDateTime = document.getElementById("entryDateTime").value;
+      const queueNumber = document.getElementById("queueNumber").value;
+      const customerName = document.getElementById("customerName").value;
+      const village = document.getElementById("village").value;
+      const material = document.getElementById("material").value;
+      const weight = parseFloat(document.getElementById("weight").value);
+
+      try {
+        await setDoc(doc(db, "GrindingRecords", queueNumber + "_" + entryDateTime.slice(0,10)), {
+          queueNumber,
+          customerName,
+          village,
+          material,
+          weight,
+          dateTime: entryDateTime
+        });
+
+        status.textContent = "✅ ਨਵਾਂ ਡਾਟਾ ਸੇਵ ਹੋ ਗਿਆ";
+        status.className = "mt-4 text-center text-sm font-medium text-green-600";
+        form.reset();
+      } catch (error) {
+        console.error(error);
+        status.textContent = "❌ ਗਲਤੀ ਆਈ";
+        status.className = "mt-4 text-center text-sm font-medium text-red-600";
+      }
+    });
+
+    // Search Record
+    window.searchRecord = async function () {
+      const qn = document.getElementById("searchQueueNumber").value;
+      const dt = document.getElementById("searchDate").value;
+
+      if (!qn || !dt) {
+        alert("ਕਤਾਰ ਨੰਬਰ ਅਤੇ ਤਾਰੀਖ ਦਿਓ");
+        return;
+      }
+
+      const docRef = doc(db, "GrindingRecords", qn + "_" + dt);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        document.getElementById("entryDateTime").value = data.dateTime;
+        document.getElementById("queueNumber").value = data.queueNumber;
+        document.getElementById("customerName").value = data.customerName;
+        document.getElementById("village").value = data.village;
+        document.getElementById("material").value = data.material;
+        document.getElementById("weight").value = data.weight;
+        status.textContent = "📌 ਰਿਕਾਰਡ ਲੋਡ ਹੋ ਗਿਆ, ਤੁਸੀਂ Edit ਕਰ ਸਕਦੇ ਹੋ";
+        status.className = "mt-4 text-center text-sm font-medium text-blue-600";
+      } else {
+        status.textContent = "❌ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ";
+        status.className = "mt-4 text-center text-sm font-medium text-red-600";
+      }
+    }
+
+    // Update Record
+    window.updateRecord = async function () {
+      const entryDateTime = document.getElementById("entryDateTime").value;
+      const queueNumber = document.getElementById("queueNumber").value;
+      const customerName = document.getElementById("customerName").value;
+      const village = document.getElementById("village").value;
+      const material = document.getElementById("material").value;
+      const weight = parseFloat(document.getElementById("weight").value);
+
+      const docRef = doc(db, "GrindingRecords", queueNumber + "_" + entryDateTime.slice(0,10));
+
+      try {
+        await updateDoc(docRef, {
+          customerName,
+          village,
+          material,
+          weight,
+          dateTime: entryDateTime
+        });
+
+        status.textContent = "✅ ਰਿਕਾਰਡ ਅਪਡੇਟ ਹੋ ਗਿਆ";
+        status.className = "mt-4 text-center text-sm font-medium text-green-600";
+      } catch (error) {
+        console.error(error);
+        status.textContent = "❌ ਅਪਡੇਟ ਕਰਨ ਵਿੱਚ ਗਲਤੀ";
+        status.className = "mt-4 text-center text-sm font-medium text-red-600";
+      }
+    }
+
+    // Logout
+    window.logout = function () {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      }).catch((error) => console.error(error));
+    }
+  </script>
+</body>
+</html>

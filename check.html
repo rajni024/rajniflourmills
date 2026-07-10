@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ਰਿਪੋਰਟ - ਨੰਬਰਦਾਰ ਫਲੋਰ ਮਿਲ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl">
+    <h1 class="text-xl font-bold mb-4">ਸਾਰੇ ਰਿਕਾਰਡ</h1>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm border">
+        <thead><tr class="bg-gray-200"><th>ਗਾਹਕ</th><th>ਸਮੱਗਰੀ</th><th>ਵਜ਼ਨ</th></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const records = JSON.parse(localStorage.getItem('grindingRecords') || '[]');
+    const tbody = document.getElementById('tableBody');
+    records.forEach(r => {
+      tbody.innerHTML += `<tr><td class="p-2 border">${r.customerName}</td><td class="p-2 border">${r.material}</td><td class="p-2 border">${r.weight}</td></tr>`;
+    });
+  </script>
+</body>
+</html>
