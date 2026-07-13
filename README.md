@@ -1,4 +1,4 @@
-# ਨੰਬਰਦਾਰ ਫਲੋਰ ਮਿਲ (Nambardar Flour Mill) — Record Management App
+# ਰਜਨੀ ਫਲੋਰ ਮਿਲ (Rajni Flour Mill) — Record Management App
 
 A small web app (Punjabi UI) for a flour mill to log grinding jobs, mark goods as picked up, and manage/backup records. Built with plain HTML/JS and Tailwind CSS (via CDN), with some pages wired to Firebase Firestore/Auth.
 
